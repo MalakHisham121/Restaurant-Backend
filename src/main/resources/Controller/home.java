@@ -1,0 +1,12 @@
+package org.example.restarant.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HomeController {
+    @GetMapping("/")
+    public String home() {
+        return Map.of("Welcome to the Restaurant API!");
+    }
+}
