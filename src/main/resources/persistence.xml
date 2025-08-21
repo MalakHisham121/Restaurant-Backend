@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<beans xmlns="http://www.springframework.org/schema/beans"-->
+<!--       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">-->
+
+<!--</beans>-->
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+<persistence-unit name="yourPersistenceUnit">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <properties>
+        <property name="jakarta.persistence.jdbc.url" value="${env.DB_URL}"/>
+        <property name="jakarta.persistence.jdbc.user" value="${env.DB_USERNAME}"/>
+        <property name="jakarta.persistence.jdbc.password" value="${env.DB_PASSWORD}"/>
+        <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+        <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+        <property name="hibernate.show_sql" value="true"/>
+        <property name="hibernate.hbm2ddl.auto" value="validate"/>
+    </properties>
+</persistence-unit>
+    <persistence-unit name="yourPersistenceUnit2">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.example.demo.entity.User</class>
+        <class>com.example.demo.entity.Setting</class>
+        <class>com.example.demo.entity.Table</class>
+        <class>com.example.demo.entity.Category</class>
+        <class>com.example.demo.entity.Product</class>
+        <class>com.example.demo.entity.Order</class>
+        <class>com.example.demo.entity.OrderItem</class>
+        <class>com.example.demo.entity.OrderStatusChange</class>
+        <class>com.example.demo.entity.Review</class>
+        <class>com.example.demo.entity.Enquiry</class>
+        <properties>
+            <!-- ... properties as above -->
+        </properties>
+    </persistence-unit>
+</persistence>
