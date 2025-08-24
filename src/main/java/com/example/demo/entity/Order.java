@@ -116,10 +116,24 @@ public class Order {
         this.reviews = reviews;
     }
 
-/*
- TODO [JPA Buddy] create field to map the 'status' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "status", columnDefinition = "order_status(0, 0) not null")
-    private Object status;
-*/
+//    public void setStatus(Order_status status) {
+//        this.status = status;
+//    }
+//
+//    public Order_status getStatus() {
+//        return status;
+//    }
+
+
+
+    /*
+             TODO [JPA Buddy] create field to map the 'status' column
+             Available actions: Define target Java type | Uncomment as is | Remove column mapping
+
+         */
+//            @Column(name = "status", columnDefinition = "Order_status(0, 0) not null")
+//            @Enumerated(EnumType.STRING)
+//            private Order_status status;
+//    @Column(name = "status",nullable = false , columnDefinition = "Order_status(0, 0) not null")
+
 }
