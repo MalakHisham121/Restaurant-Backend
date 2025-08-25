@@ -36,7 +36,6 @@ public class OrderReceptionService {
             // Both date and status provided
             OffsetDateTime startDate = date;
             OffsetDateTime endDate = date.plusDays(1);
-            System.out.println("DEBUG: Searching with date range: " + startDate + " to " + endDate + " and status: '" + cleanStatus + "'");
             orders = orderReceptionRepository.findByDateRangeAndStatus(startDate, endDate, cleanStatus);
 
             // If no results found with both filters, let's check each filter individually
@@ -53,11 +52,9 @@ public class OrderReceptionService {
             // Only date provided
             OffsetDateTime startDate = date;
             OffsetDateTime endDate = date.plusDays(1);
-            System.out.println("DEBUG: Searching with date range: " + startDate + " to " + endDate);
             orders = orderReceptionRepository.findByDateRange(startDate, endDate);
         } else if (cleanStatus != null) {
             // Only status provided
-            System.out.println("DEBUG: Searching with status: '" + cleanStatus + "'");
             orders = orderReceptionRepository.findByStatus(cleanStatus);
 
             // If no results, show available statuses
@@ -106,6 +103,9 @@ public class OrderReceptionService {
             return null;
         }
 
+        // Update the main order status as well
+        order.setStatus(status);
+
         // Create new order status change
         OrderStatusChange statusChange = new OrderStatusChange();
         statusChange.setOrder(order);
@@ -132,10 +132,11 @@ public class OrderReceptionService {
                         item.getPrice()
                 )).collect(Collectors.toList());
 
+        // Try to get the latest status from OrderStatusChanges first, fallback to order.status
         String latestStatus = order.getOrderStatusChanges().stream()
                 .max(Comparator.comparing(OrderStatusChange::getCreatedAt))
                 .map(OrderStatusChange::getStatus)
-                .orElse("Unknown");
+                .orElse(order.getStatus() != null ? order.getStatus() : "Unknown");
 
         return new OrderReceptionDTO(
                 order.getId(),

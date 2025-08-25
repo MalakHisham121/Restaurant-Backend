@@ -48,10 +48,6 @@ public interface OrderReceptionRepository extends JpaRepository<Order, Long> {
                                         @Param("endDate") OffsetDateTime endDate,
                                         @Param("status") String status);
 
-    // Add a helper method to get all distinct statuses for debugging
-    @Query("SELECT DISTINCT osc.status FROM OrderStatusChange osc ORDER BY osc.status")
-    List<String> findAllDistinctStatuses();
-
     // Method to find a single order by ID with all details
     @Query("SELECT DISTINCT o FROM Order o " +
            "LEFT JOIN FETCH o.customer " +
@@ -60,4 +56,7 @@ public interface OrderReceptionRepository extends JpaRepository<Order, Long> {
            "LEFT JOIN FETCH o.orderStatusChanges " +
            "WHERE o.id = :orderId")
     Order findByIdWithDetails(@Param("orderId") Long orderId);
+
+    @Query("SELECT DISTINCT osc.status FROM OrderStatusChange osc ORDER BY osc.status")
+    List<String> findAllDistinctStatuses();
 }

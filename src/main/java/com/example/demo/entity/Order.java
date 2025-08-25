@@ -36,6 +36,9 @@ public class Order {
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
     @OneToMany(mappedBy = "order")
     private Set<OrderItem> orderItems = new LinkedHashSet<>();
 
@@ -92,6 +95,14 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public Set<OrderItem> getOrderItems() {
         return orderItems;
     }
@@ -115,11 +126,4 @@ public class Order {
     public void setReviews(Set<Review> reviews) {
         this.reviews = reviews;
     }
-
-/*
- TODO [JPA Buddy] create field to map the 'status' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "status", columnDefinition = "order_status(0, 0) not null")
-    private Object status;
-*/
 }
