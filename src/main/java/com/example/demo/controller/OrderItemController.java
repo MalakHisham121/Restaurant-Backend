@@ -39,6 +39,11 @@ public class OrderItemController {
         dto.setQuantity(item.getQuantity());
         return dto;
     }
+    @DeleteMapping ("/delete")
+    public ResponseEntity<String> deleteOrderItem(@RequestParam Long orderItemId){
+        return ResponseEntity.status(HttpStatus.OK).body(orderItemService.deleteOrderItem(orderItemId));
+
+    }
 
 }
 
