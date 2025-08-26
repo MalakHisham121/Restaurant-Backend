@@ -6,6 +6,13 @@ import com.example.demo.entity.Product;
 import java.math.BigDecimal;
 
 public class OrderItemDTO {
+    public OrderItemDTO(Long orderid, Long productid, Integer quantity, BigDecimal price) {
+        this.orderid = orderid;
+        this.productid = productid;
+        this.quantity = quantity;
+        this.price = price;
+    }
+
     private Long id;
     private Long orderid;
     private Long productid;
