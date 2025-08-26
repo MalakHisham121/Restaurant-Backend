@@ -68,5 +68,4 @@ public class Review {
     public void setComment(String comment) {
         this.comment = comment;
     }
-
 }
