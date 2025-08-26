@@ -13,9 +13,6 @@ import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-// TODO
-// update role function to return a meaningful response in case of invalid role
-
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -28,15 +25,12 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "email") // TODO: , nullable = false
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "phone", length = 20) // TODO: , nullable = false
-    private String phone;
-    private String role;
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
