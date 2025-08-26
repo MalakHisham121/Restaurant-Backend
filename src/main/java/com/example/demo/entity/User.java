@@ -45,6 +45,11 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "customer")
     private Set<Review> reviews = new LinkedHashSet<>();
 
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+
+
     public Long getId() {
         return id;
     }
@@ -162,7 +167,7 @@ public class User implements UserDetails {
 /*
  TODO [JPA Buddy] create field to map the 'role' column
  Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "role", columnDefinition = "user_role(0, 0) not null")
-    private Object role;
-*/
+ */
+    @Column(name = "role", nullable = false)
+    private String role;
 }
