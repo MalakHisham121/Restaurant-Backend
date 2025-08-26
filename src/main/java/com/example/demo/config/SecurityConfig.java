@@ -35,8 +35,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/api/auth/**").permitAll()  // login/signup endpoints
-                        .anyRequest().authenticated()
+                        .requestMatchers("/","/api/**","/api/orderitem/**","api/auth/**","/api/orderitem/update").permitAll()// login/signup endpoints
+
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no sessions, JWT only

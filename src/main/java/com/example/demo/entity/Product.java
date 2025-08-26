@@ -37,6 +37,17 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private Set<OrderItem> orderItems = new LinkedHashSet<>();
 
+    @Column(name = "in_stock_quantity", nullable = false)
+    private Integer inStockQuantity;
+
+    public Integer getInStockQuantity() {
+        return inStockQuantity;
+    }
+
+    public void setInStockQuantity(Integer inStockQuantity) {
+        this.inStockQuantity = inStockQuantity;
+    }
+
     public Long getId() {
         return id;
     }

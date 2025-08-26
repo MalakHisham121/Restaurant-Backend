@@ -4,11 +4,13 @@ import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderItemDTO;
 import com.example.demo.entity.*;
 import com.example.demo.repository.OrderItemRepo;
+import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.OrderRepo;
 import com.example.demo.repository.ProductRepo;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -20,28 +22,31 @@ import java.util.stream.Collectors;
 public class OrderItemService {
     private final OrderItemRepo orderItemRepo;
     private final OrderRepo orderRepo;
+
     private final ProductRepo productRepo;
+    // eyJhbGciOiJIUzI1NiJ9.e30.m_Hw9T5ursrEiDKbqw1NM5qorV0qx77edIEJp5YINtE
     public OrderItemService(OrderItemRepo orderItemRepo,OrderRepo orderRepo,ProductRepo productRepo){
         this.orderItemRepo = orderItemRepo;
         this.orderRepo = orderRepo;
         this.productRepo = productRepo;
 
     }
+
+
     @Transactional
     public List<OrderItem> findByOrderId(Long orderId){
 
         return orderItemRepo.findByOrderId(orderId);
     }
+    // this is one of admin function
     @Transactional
     public Order addOrderItem(OrderItemDTO orderItem){
+
         if(orderItem.getOrderId() == null|| orderItem.getProductId()==null|| orderItem.getQuantity()==null|| orderItem.getPrice() == null) {
             throw new IllegalArgumentException("Your passed order item is not valid , product id ,order id, quantity and price connot be null ");
         }
-       // Order o= orderRepo.findById(orderItem.getOrderId()).get();
 
             Order order = orderRepo.findById(orderItem.getOrderId()). orElseThrow(()->new RuntimeException("Order not found with ID "+ orderItem.getOrderId()));
-
-
 
         OrderItem item = new OrderItem();
         item.setOrder(order);
@@ -53,9 +58,8 @@ public class OrderItemService {
 
         orderItemRepo.save(item);
 
-//        order.getOrderItems().add(item);
-//        orderRepo.save(order);
-        totalPrice(order);
+        order.setTotalPrice(order.getTotalPrice().add(item.getPrice()));
+        orderRepo.save(order);
 
         return order;
 
@@ -63,13 +67,13 @@ public class OrderItemService {
     private BigDecimal calcPrice(int quantity, BigDecimal p) {
         return p.multiply(BigDecimal.valueOf(quantity));
     }
-    private void totalPrice (Order order) {
 
-       BigDecimal total = order.getOrderItems().stream()
-                .map(oi -> oi.getPrice())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        order.setTotalPrice(total);
+    private void calcTotalPrice(Order order, int quantity , BigDecimal Unitprice ){
+        BigDecimal total = Unitprice.multiply( BigDecimal.valueOf(quantity));
+        order.setTotalPrice(order.getTotalPrice().add(total));
         orderRepo.save(order);
+
+
 
     }
 
@@ -82,6 +86,7 @@ public class OrderItemService {
                 item.getPrice()
         );
     }
+    // this function (mapToOrderDTO) has problems
     private OrderDTO mapToOrderDTO(Order order) {
         List<Long> orderItemIds = order.getOrderItems().stream()
                 .map(OrderItem::getId)
@@ -107,4 +112,39 @@ public class OrderItemService {
                 Order_status.PENDING
         );
     }
+
+    @Transactional
+    public OrderItem updateOrderItemQuantity(Long orderItemId,int newQuantity){
+
+        if(orderItemId==null) {
+            throw new IllegalArgumentException("Order id connot be null ");
+        }
+        OrderItem ActualorderItem = orderItemRepo.findById(orderItemId). orElseThrow(()->new RuntimeException("Order Item not found with ID "+ orderItemId));
+        int avaliable = ActualorderItem.getProduct().getInStockQuantity()+ ActualorderItem.getQuantity();
+        Order order = ActualorderItem.getOrder();
+        BigDecimal unitPrice =ActualorderItem.getProduct().getPrice();
+        if(avaliable - newQuantity >=0){
+          calcTotalPrice(order,avaliable - newQuantity ,unitPrice);
+            ActualorderItem.getProduct().setInStockQuantity(avaliable - newQuantity );
+
+            ActualorderItem.setQuantity(newQuantity);
+            ActualorderItem.setPrice(calcPrice(newQuantity,unitPrice));
+        }
+        else{
+            throw new IllegalArgumentException("Only the available quantity of the "+ActualorderItem.getProduct().getName() +"Product is : "+ avaliable );
+        }
+
+
+
+        productRepo.save(ActualorderItem.getProduct());
+        orderItemRepo.save(ActualorderItem);
+
+
+
+        return ActualorderItem;
+
+    }
+
+
+
 }

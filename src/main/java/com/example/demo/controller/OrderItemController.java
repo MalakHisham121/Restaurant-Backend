@@ -7,6 +7,7 @@ import com.example.demo.entity.OrderItem;
 import com.example.demo.service.OrderItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -39,6 +40,12 @@ public class OrderItemController {
         dto.setQuantity(item.getQuantity());
         return dto;
     }
+    @GetMapping("/update")
+    public  ResponseEntity<OrderItem> updateOrderItemQuantity(@RequestParam long orderItemId,@RequestParam int quantity){
+        return ResponseEntity.status(HttpStatus.OK).body(orderItemService.updateOrderItemQuantity(orderItemId,quantity));
+
+    }
+
 
 }
 
