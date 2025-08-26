@@ -23,6 +23,9 @@ public class OrderStatusChange {
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
     public Long getId() {
         return id;
     }
@@ -47,21 +50,11 @@ public class OrderStatusChange {
         this.createdAt = createdAt;
     }
 
-//    public Order_status getStatus() {
-//        return status;
-//    }
+    public String getStatus() {
+        return status;
+    }
 
-//    public void setStatus(Order_status status) {
-//        this.status = status;
-//    }
-
-    /*
-     TODO [JPA Buddy] create field to map the 'status' column
-     Available actions: Define target Java type | Uncomment as is | Remove column mapping
-
-     */
-//    @Column(name = "status",nullable = false , columnDefinition = "Order_status(0, 0) not null")
-//    @Enumerated(EnumType.STRING)
-//    private Order_status status;
-
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
