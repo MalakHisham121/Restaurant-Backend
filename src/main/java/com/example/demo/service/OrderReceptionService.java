@@ -123,7 +123,7 @@ public class OrderReceptionService {
     }
 
     private OrderReceptionDTO mapOrderToDTO(Order order) {
-        String customerName = order.getCustomer() != null ? order.getCustomer().getName() : "Unknown Customer";
+        String customerName = order.getCustomer() != null ? order.getCustomer().getUsername() : "Unknown Customer";
 
         List<OrderReceptionDTO.ItemDTO> items = order.getOrderItems().stream()
                 .map(item -> new OrderReceptionDTO.ItemDTO(
