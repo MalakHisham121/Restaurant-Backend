@@ -86,6 +86,4 @@ public class CustomerReviewController {
         return deleted ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
-
-
 }

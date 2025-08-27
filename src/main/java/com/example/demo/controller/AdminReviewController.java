@@ -30,7 +30,7 @@ public class AdminReviewController {
 
         if (review.getCustomer() != null) {
             dto.setCustomerId(review.getCustomer().getId());
-            dto.setCustomerName(review.getCustomer().getName());
+            dto.setCustomerName(review.getCustomer().getUsername());
         }
 
         return dto;
