@@ -28,7 +28,7 @@ public class OrderTrackingService {
         String currentStatus = order.getOrderStatusChanges().stream()
                 .max(Comparator.comparing(OrderStatusChange::getCreatedAt))
                 .map(OrderStatusChange::getStatus)
-                .orElse(order.getStatus() != null ? order.getStatus() : "Unknown");
+                .orElse(order.getStatus() != null ? String.valueOf(order.getStatus()) : "Unknown");
 
         // Calculate estimated time based on status and order creation time
         String estimatedTime = calculateEstimatedTime(order, currentStatus);

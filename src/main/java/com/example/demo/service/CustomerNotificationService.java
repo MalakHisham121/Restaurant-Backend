@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.NotificationResponseDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderStatusChange;
+import com.example.demo.entity.Order_status;
 import com.example.demo.repository.OrderReceptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,13 @@ public class CustomerNotificationService {
         boolean hasReadyOrder = customerOrders.stream()
                 .anyMatch(order -> {
                     // Check the latest status from OrderStatusChanges first
-                    String latestStatus = order.getOrderStatusChanges().stream()
+                    Order_status latestStatus = Order_status.valueOf(order.getOrderStatusChanges() != null
+                            ? order.getOrderStatusChanges().stream()
                             .max(Comparator.comparing(OrderStatusChange::getCreatedAt))
                             .map(OrderStatusChange::getStatus)
-                            .orElse(order.getStatus());
+                            .orElse(order.getStatus().toString()): String.valueOf(order.getStatus()));
 
-                    return "ready".equalsIgnoreCase(latestStatus);
+                    return Order_status.READY.equals(latestStatus);
                 });
 
         if (hasReadyOrder) {
@@ -55,7 +57,7 @@ public class CustomerNotificationService {
                     String latestStatus = order.getOrderStatusChanges().stream()
                             .max(Comparator.comparing(OrderStatusChange::getCreatedAt))
                             .map(OrderStatusChange::getStatus)
-                            .orElse(order.getStatus());
+                            .orElse(String.valueOf(order.getStatus()));
 
                     return "ready".equalsIgnoreCase(latestStatus);
                 });

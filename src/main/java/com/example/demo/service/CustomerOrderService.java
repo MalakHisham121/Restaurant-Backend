@@ -2,11 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.OrderPlacementDTO;
 import com.example.demo.dto.OrderPlacementResponseDTO;
-import com.example.demo.entity.Order;
-import com.example.demo.entity.OrderItem;
-import com.example.demo.entity.OrderStatusChange;
-import com.example.demo.entity.Product;
-import com.example.demo.entity.Table;
+import com.example.demo.entity.*;
 import com.example.demo.repository.OrderReceptionRepository;
 import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.OrderStatusChangeRepository;
@@ -48,7 +44,7 @@ public class CustomerOrderService {
         // Create new order
         Order order = new Order();
         order.setTable(table);
-        order.setStatus("pending"); // Set default status for new orders
+        order.setStatus(Order_status.PENDING); // Set default status for new orders
         order.setCreatedAt(OffsetDateTime.now());
         order.setUpdatedAt(OffsetDateTime.now());
 
@@ -111,14 +107,14 @@ public class CustomerOrderService {
                 .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
 
         // Check if order can be cancelled (only pending orders can be cancelled)
-        String currentStatus = order.getStatus();
-        if (!"pending".equalsIgnoreCase(currentStatus)) {
+        Order_status currentStatus = order.getStatus();
+        if (!Order_status.PENDING.equals(currentStatus)) {
             throw new RuntimeException("Cannot cancel order. Order status is: " + currentStatus +
                     ". Only pending orders can be cancelled.");
         }
 
         // Update order status to cancelled
-        order.setStatus("cancelled");
+        order.setStatus(Order_status.CANCELLED);
         order.setUpdatedAt(OffsetDateTime.now());
 
         // Save the updated order

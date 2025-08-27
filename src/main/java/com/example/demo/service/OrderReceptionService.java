@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.OrderReceptionDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderStatusChange;
+import com.example.demo.entity.Order_status;
 import com.example.demo.repository.OrderReceptionRepository;
 import com.example.demo.repository.OrderStatusChangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +98,7 @@ public class OrderReceptionService {
         return mapOrderToDTO(order);
     }
 
-    public String updateOrderStatus(Long orderId, String status) {
+    public String updateOrderStatus(Long orderId, Order_status status) {
         Order order = orderReceptionRepository.findById(orderId).orElse(null);
         if (order == null) {
             return null;
@@ -109,7 +110,7 @@ public class OrderReceptionService {
         // Create new order status change
         OrderStatusChange statusChange = new OrderStatusChange();
         statusChange.setOrder(order);
-        statusChange.setStatus(status);
+        statusChange.setStatus(String.valueOf(status));
         statusChange.setCreatedAt(OffsetDateTime.now());
 
         // Update order's updated timestamp
@@ -136,7 +137,7 @@ public class OrderReceptionService {
         String latestStatus = order.getOrderStatusChanges().stream()
                 .max(Comparator.comparing(OrderStatusChange::getCreatedAt))
                 .map(OrderStatusChange::getStatus)
-                .orElse(order.getStatus() != null ? order.getStatus() : "Unknown");
+                .orElse(order.getStatus() != null ? String.valueOf(order.getStatus()) : "Unknown");
 
         return new OrderReceptionDTO(
                 order.getId(),

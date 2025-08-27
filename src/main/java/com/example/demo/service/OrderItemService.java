@@ -4,18 +4,14 @@ import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderItemDTO;
 import com.example.demo.entity.*;
 import com.example.demo.repository.OrderItemRepo;
-import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.OrderRepo;
-import com.example.demo.repository.ProductRepo;
+import com.example.demo.repository.ProductRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,9 +19,9 @@ public class OrderItemService {
     private final OrderItemRepo orderItemRepo;
     private final OrderRepo orderRepo;
 
-    private final ProductRepo productRepo;
+    private final ProductRepository productRepo;
     // eyJhbGciOiJIUzI1NiJ9.e30.m_Hw9T5ursrEiDKbqw1NM5qorV0qx77edIEJp5YINtE
-    public OrderItemService(OrderItemRepo orderItemRepo,OrderRepo orderRepo,ProductRepo productRepo){
+    public OrderItemService(OrderItemRepo orderItemRepo,OrderRepo orderRepo,ProductRepository productRepo){
         this.orderItemRepo = orderItemRepo;
         this.orderRepo = orderRepo;
         this.productRepo = productRepo;
