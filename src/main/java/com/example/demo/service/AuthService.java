@@ -22,9 +22,10 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public User register(String username, String password, String role) {
+    public User register(String username, String email, String password, String role) {
         User user = new User();
         user.setUsername(username);
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(role);
         return userRepository.save(user);

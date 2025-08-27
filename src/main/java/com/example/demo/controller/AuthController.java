@@ -17,9 +17,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public User register(@RequestParam String username,
+                         @RequestParam String email,
                          @RequestParam String password,
                          @RequestParam String role) {
-        return authService.register(username, password, role);
+        return authService.register(username, email, password, role);
     }
 
     @PostMapping("/login")
