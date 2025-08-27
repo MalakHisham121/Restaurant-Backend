@@ -13,7 +13,6 @@ import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-// TODO: apply RBAC
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
