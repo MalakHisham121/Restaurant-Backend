@@ -2,29 +2,33 @@ package com.example.demo.entity;
 
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "phone", nullable = false, length = 20)
-    private String phone;
-
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "created_at")
@@ -41,6 +45,11 @@ public class User {
     @OneToMany(mappedBy = "customer")
     private Set<Review> reviews = new LinkedHashSet<>();
 
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+
+
     public Long getId() {
         return id;
     }
@@ -49,12 +58,10 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role));
     }
 
     public String getEmail() {
@@ -73,12 +80,14 @@ public class User {
         this.phone = phone;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public String getUsername() {
+        return username;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -117,6 +126,40 @@ public class User {
         return reviews;
     }
 
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public void setRole(String role) {
+        if (Objects.equals(role, "ROLE_USER") || Objects.equals(role, "ROLE_ADMIN"))
+            this.role = role;
+    }
+
+    public void setPassword(String encode) {
+        this.password = encode;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public void setReviews(Set<Review> reviews) {
         this.reviews = reviews;
     }
@@ -124,7 +167,7 @@ public class User {
 /*
  TODO [JPA Buddy] create field to map the 'role' column
  Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "role", columnDefinition = "user_role(0, 0) not null")
-    private Object role;
-*/
+ */
+    @Column(name = "role", nullable = false)
+    private String role;
 }

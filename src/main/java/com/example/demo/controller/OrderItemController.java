@@ -1,12 +1,15 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderItemDTO;
+import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderItem;
 import com.example.demo.service.OrderItemService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +29,10 @@ public class OrderItemController {
                 .collect(Collectors.toList());
 
     }
+    @PostMapping("/add")
+    public ResponseEntity<Order> addOrderItem(@RequestBody OrderItemDTO request) {
+       return ResponseEntity.status(HttpStatus.CREATED).body(orderItemService.addOrderItem(request));
+    }
     private OrderItemDTO mapToDTO(OrderItem item) {
         OrderItemDTO dto = new OrderItemDTO();
         dto.setId(item.getId());
@@ -33,5 +40,12 @@ public class OrderItemController {
         dto.setQuantity(item.getQuantity());
         return dto;
     }
+    @GetMapping("/update")
+    public  ResponseEntity<OrderItem> updateOrderItemQuantity(@RequestParam long orderItemId,@RequestParam int quantity){
+        return ResponseEntity.status(HttpStatus.OK).body(orderItemService.updateOrderItemQuantity(orderItemId,quantity));
+
+    }
+
+
 }
 
