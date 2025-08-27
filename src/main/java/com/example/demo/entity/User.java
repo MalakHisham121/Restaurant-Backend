@@ -61,7 +61,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     public String getEmail() {
@@ -147,8 +147,7 @@ public class User implements UserDetails {
         return true;
     }
 
-    public void setRole(String role) {
-        if (Objects.equals(role, "ROLE_USER") || Objects.equals(role, "ROLE_ADMIN"))
+    public void setRole(Role role) {
             this.role = role;
     }
 
@@ -168,6 +167,7 @@ public class User implements UserDetails {
  TODO [JPA Buddy] create field to map the 'role' column
  Available actions: Define target Java type | Uncomment as is | Remove column mapping
  */
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private String role;
+    private Role role;
 }
