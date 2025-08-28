@@ -30,9 +30,7 @@ public interface OrderReceptionRepository extends JpaRepository<Order, Long> {
            "LEFT JOIN FETCH o.orderItems oi " +
            "LEFT JOIN FETCH oi.product " +
            "LEFT JOIN FETCH o.orderStatusChanges " +
-           "WHERE EXISTS (SELECT osc FROM OrderStatusChange osc WHERE osc.order = o AND " +
-           "(LOWER(osc.status) = LOWER(:status) OR " +
-           "LOWER(osc.status) LIKE LOWER(CONCAT('%', :status, '%'))))")
+           "WHERE LOWER(o.status) = LOWER(:status)")
     List<Order> findByStatus(@Param("status") String status);
 
     @Query("SELECT DISTINCT o FROM Order o " +
@@ -41,9 +39,7 @@ public interface OrderReceptionRepository extends JpaRepository<Order, Long> {
            "LEFT JOIN FETCH oi.product " +
            "LEFT JOIN FETCH o.orderStatusChanges " +
            "WHERE (o.createdAt >= :startDate AND o.createdAt < :endDate) " +
-           "AND EXISTS (SELECT osc FROM OrderStatusChange osc WHERE osc.order = o AND " +
-           "(LOWER(osc.status) = LOWER(:status) OR " +
-           "LOWER(osc.status) LIKE LOWER(CONCAT('%', :status, '%'))))")
+           "AND LOWER(o.status) = LOWER(:status)")
     List<Order> findByDateRangeAndStatus(@Param("startDate") OffsetDateTime startDate,
                                         @Param("endDate") OffsetDateTime endDate,
                                         @Param("status") String status);
@@ -57,6 +53,6 @@ public interface OrderReceptionRepository extends JpaRepository<Order, Long> {
            "WHERE o.id = :orderId")
     Order findByIdWithDetails(@Param("orderId") Long orderId);
 
-    @Query("SELECT DISTINCT osc.status FROM OrderStatusChange osc ORDER BY osc.status")
+    @Query("SELECT DISTINCT o.status FROM Order o WHERE o.status IS NOT NULL ORDER BY o.status")
     List<String> findAllDistinctStatuses();
 }

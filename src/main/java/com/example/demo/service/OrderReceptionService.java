@@ -23,7 +23,6 @@ public class OrderReceptionService {
     private OrderStatusChangeRepository orderStatusChangeRepository;
 
     public List<OrderReceptionDTO> getOrderHistoryList(OffsetDateTime date, String status) {
-
         List<Order> orders;
 
         // Clean up the status parameter to handle whitespace and null
@@ -37,17 +36,6 @@ public class OrderReceptionService {
             OffsetDateTime startDate = date;
             OffsetDateTime endDate = date.plusDays(1);
             orders = orderReceptionRepository.findByDateRangeAndStatus(startDate, endDate, cleanStatus);
-
-            // If no results found with both filters, let's check each filter individually
-            if (orders.isEmpty()) {
-                List<Order> dateOnlyOrders = orderReceptionRepository.findByDateRange(startDate, endDate);
-
-                List<Order> statusOnlyOrders = orderReceptionRepository.findByStatus(cleanStatus);
-
-                if (statusOnlyOrders.isEmpty()) {
-                    List<String> availableStatuses = orderReceptionRepository.findAllDistinctStatuses();
-                }
-            }
         } else if (date != null) {
             // Only date provided
             OffsetDateTime startDate = date;
@@ -56,34 +44,9 @@ public class OrderReceptionService {
         } else if (cleanStatus != null) {
             // Only status provided
             orders = orderReceptionRepository.findByStatus(cleanStatus);
-
-            // If no results, show available statuses
-            if (orders.isEmpty()) {
-                List<String> availableStatuses = orderReceptionRepository.findAllDistinctStatuses();
-            }
         } else {
             // No filters provided
             orders = orderReceptionRepository.findAllWithDetails();
-        }
-
-
-        // Let's also log some sample order dates if any exist
-        if (!orders.isEmpty()) {
-            orders.stream().limit(3).forEach(order -> {
-                order.getOrderStatusChanges().forEach(statusChange ->
-                    System.out.println("  Status: '" + statusChange.getStatus() + "' at " + statusChange.getCreatedAt())
-                );
-            });
-        } else {
-            // Check if there are ANY orders at all
-            List<Order> allOrders = orderReceptionRepository.findAllWithDetails();
-            if (!allOrders.isEmpty()) {
-                allOrders.stream().limit(5).forEach(order -> {
-                    order.getOrderStatusChanges().forEach(statusChange ->
-                        System.out.println("  Status: '" + statusChange.getStatus() + "' at " + statusChange.getCreatedAt())
-                    );
-                });
-            }
         }
 
         return orders.stream().map(this::mapOrderToDTO).collect(Collectors.toList());
@@ -123,7 +86,7 @@ public class OrderReceptionService {
     }
 
     private OrderReceptionDTO mapOrderToDTO(Order order) {
-        String customerName = order.getCustomer() != null ? order.getCustomer().getEmail() : "Unknown Customer";
+        String customerName = order.getCustomer() != null ? order.getCustomer().getUsername() : "Unknown Customer";
 
         List<OrderReceptionDTO.ItemDTO> items = order.getOrderItems().stream()
                 .map(item -> new OrderReceptionDTO.ItemDTO(

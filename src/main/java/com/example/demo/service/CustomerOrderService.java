@@ -7,11 +7,13 @@ import com.example.demo.entity.OrderItem;
 import com.example.demo.entity.OrderStatusChange;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.Table;
+import com.example.demo.entity.User;
 import com.example.demo.repository.OrderReceptionRepository;
 import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.OrderStatusChangeRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.TableRepository;
+import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,14 +41,22 @@ public class CustomerOrderService {
     @Autowired
     private OrderStatusChangeRepository orderStatusChangeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Transactional
-    public OrderPlacementResponseDTO placeOrder(OrderPlacementDTO orderPlacementDTO) {
+    public OrderPlacementResponseDTO placeOrder(OrderPlacementDTO orderPlacementDTO, String customerUsername) {
+        // Get the authenticated customer
+        User customer = userRepository.findByUsername(customerUsername)
+                .orElseThrow(() -> new RuntimeException("Customer not found: " + customerUsername));
+
         // Validate table exists
         Table table = tableRepository.findById(orderPlacementDTO.getTableId())
                 .orElseThrow(() -> new RuntimeException("Table not found with ID: " + orderPlacementDTO.getTableId()));
 
         // Create new order
         Order order = new Order();
+        order.setCustomer(customer); // Associate the authenticated customer with the order
         order.setTable(table);
         order.setStatus("PENDING"); // Set default status for new orders
         order.setCreatedAt(OffsetDateTime.now());
@@ -105,10 +115,19 @@ public class CustomerOrderService {
     }
 
     @Transactional
-    public String cancelOrder(Long orderId) {
+    public String cancelOrder(Long orderId, String customerUsername) {
+        // Get the authenticated customer
+        User customer = userRepository.findByUsername(customerUsername)
+                .orElseThrow(() -> new RuntimeException("Customer not found: " + customerUsername));
+
         // Find the order
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+
+        // Verify that the order belongs to the authenticated customer
+        if (!order.getCustomer().getId().equals(customer.getId())) {
+            throw new RuntimeException("Access denied. You can only cancel your own orders.");
+        }
 
         // Check if order can be cancelled (only pending orders can be cancelled)
         String currentStatus = order.getStatus();

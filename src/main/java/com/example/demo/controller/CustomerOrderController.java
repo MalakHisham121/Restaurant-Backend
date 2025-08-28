@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +20,8 @@ public class CustomerOrderController {
     private CustomerOrderService customerOrderService;
 
     @PostMapping("/place")
-    public ResponseEntity<?> placeOrder(@RequestBody OrderPlacementDTO orderPlacementDTO) {
+    public ResponseEntity<?> placeOrder(@RequestBody OrderPlacementDTO orderPlacementDTO,
+                                       Authentication authentication) {
         try {
             // Validate request
             if (orderPlacementDTO.getTableId() == null) {
@@ -40,7 +42,10 @@ public class CustomerOrderController {
                 }
             }
 
-            OrderPlacementResponseDTO response = customerOrderService.placeOrder(orderPlacementDTO);
+            // Get the authenticated customer's username
+            String customerUsername = authentication.getName();
+
+            OrderPlacementResponseDTO response = customerOrderService.placeOrder(orderPlacementDTO, customerUsername);
             return ResponseEntity.ok(response);
 
         } catch (RuntimeException e) {
@@ -52,14 +57,18 @@ public class CustomerOrderController {
     }
 
     @DeleteMapping("/cancel")
-    public ResponseEntity<?> cancelOrder(@RequestBody OrderCancelDTO orderCancelDTO) {
+    public ResponseEntity<?> cancelOrder(@RequestBody OrderCancelDTO orderCancelDTO,
+                                        Authentication authentication) {
         try {
             // Validate request
             if (orderCancelDTO.getOrderId() == null) {
                 return ResponseEntity.badRequest().body("Order ID is required");
             }
 
-            String result = customerOrderService.cancelOrder(orderCancelDTO.getOrderId());
+            // Get the authenticated customer's username
+            String customerUsername = authentication.getName();
+
+            String result = customerOrderService.cancelOrder(orderCancelDTO.getOrderId(), customerUsername);
             return ResponseEntity.ok(result);
 
         } catch (RuntimeException e) {
