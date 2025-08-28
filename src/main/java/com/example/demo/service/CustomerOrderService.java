@@ -48,7 +48,7 @@ public class CustomerOrderService {
         // Create new order
         Order order = new Order();
         order.setTable(table);
-        order.setStatus("pending"); // Set default status for new orders
+        order.setStatus("PENDING"); // Set default status for new orders
         order.setCreatedAt(OffsetDateTime.now());
         order.setUpdatedAt(OffsetDateTime.now());
 
@@ -86,7 +86,7 @@ public class CustomerOrderService {
         // Record the initial status change
         OrderStatusChange statusChange = new OrderStatusChange();
         statusChange.setOrder(savedOrder);
-        statusChange.setStatus("pending");
+        statusChange.setStatus("PENDING");
         statusChange.setCreatedAt(OffsetDateTime.now());
         orderStatusChangeRepository.save(statusChange);
 
@@ -118,7 +118,7 @@ public class CustomerOrderService {
         }
 
         // Update order status to cancelled
-        order.setStatus("cancelled");
+        order.setStatus("CANCELLED");
         order.setUpdatedAt(OffsetDateTime.now());
 
         // Save the updated order
@@ -127,7 +127,7 @@ public class CustomerOrderService {
         // Record the status change
         OrderStatusChange statusChange = new OrderStatusChange();
         statusChange.setOrder(order);
-        statusChange.setStatus("cancelled");
+        statusChange.setStatus("CANCELLED");
         statusChange.setCreatedAt(OffsetDateTime.now());
         orderStatusChangeRepository.save(statusChange);
 
