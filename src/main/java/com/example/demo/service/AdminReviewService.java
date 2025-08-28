@@ -5,7 +5,11 @@ import java.util.Optional;
 
 import com.example.demo.entity.Review;
 import com.example.demo.repository.ReviewRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Service
 public class AdminReviewService {
@@ -23,18 +27,18 @@ public class AdminReviewService {
         return reviewRepository.findAll();
     }
 
-    //get the old review by id then update(rate, comment) it with new one
-    public Review updateReview(Long id , Review updatedReview) {
-        Optional<Review> Reviews = reviewRepository.findById(id);
+    @Transactional
+    public Review toggleReviewVisibility(Long id) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Review with ID " + id + " not found"));
 
-        if(Reviews.isPresent()) {
-            Review review = Reviews.get();
-            review.setRating(updatedReview.getRating());
-            review.setComment(updatedReview.getComment());
-            return reviewRepository.save(review);
-        }
-        else {
-            throw new RuntimeException("Review not found");
+        review.setVisible(!review.isVisible());
+        return reviewRepository.save(review);
+    }
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    static class ResourceNotFoundException extends RuntimeException {
+        public ResourceNotFoundException(String message) {
+            super(message);
         }
     }
 

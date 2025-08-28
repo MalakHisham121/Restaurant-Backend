@@ -4,6 +4,8 @@ package com.example.demo.controller;
 import com.example.demo.dto.ReviewDTO;
 import com.example.demo.entity.Review;
 import com.example.demo.service.CustomerReviewService;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,31 +21,38 @@ public class CustomerReviewController {
     public CustomerReviewController(CustomerReviewService reviewService) {
         this.reviewService = reviewService;
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<ReviewDTO> createReview(
+            @RequestParam Long orderId,
+            @RequestParam(required = false) Long customerId,
+            @RequestBody ReviewDTO reviewDTO) {
+
+        Review createdReview = reviewService.createReview(orderId, customerId, reviewDTO);
+
+        ReviewDTO response = mapToDTO(createdReview);
+        return ResponseEntity.ok(response);
+    }
+
     private ReviewDTO mapToDTO(Review review) {
         ReviewDTO dto = new ReviewDTO();
         dto.setId(review.getId());
-        dto.setOrderId(review.getOrder().getId());
-        dto.setCustomerId(review.getCustomer().getId());
+
+        // Check for null before accessing
+        if (review.getOrder() != null) {
+            dto.setOrderId(review.getOrder().getId());
+        }
+
+        if (review.getCustomer() != null) {
+            dto.setCustomerId(review.getCustomer().getId());
+        }
+
         dto.setRating(review.getRating());
         dto.setComment(review.getComment());
         return dto;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ReviewDTO> CreateReview(
-            @RequestParam Long orderId,
-            @RequestParam Long CustomerId,
-            @RequestBody ReviewDTO reviewDTO)
-    {
-        Review  review = new Review();
-        review.setRating(reviewDTO.getRating());
-        review.setComment(reviewDTO.getComment());
 
-        Review CreatedReview = reviewService.CreateReview(orderId, CustomerId, review);
-
-        ReviewDTO response = mapToDTO(CreatedReview);
-        return ResponseEntity.ok(response);
-    }
 
     @GetMapping("/read/{id}")
     public ResponseEntity<ReviewDTO> getReviewById(@PathVariable Long id) {
@@ -51,6 +60,15 @@ public class CustomerReviewController {
         return review.map(value -> ResponseEntity.ok(mapToDTO(value)))
                 .orElse(ResponseEntity.notFound().build());
     }
+    @ControllerAdvice
+    public class GlobalExceptionHandler {
+
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<String> handleNotFound(ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
 
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<ReviewDTO>> getReviewsByCustomer(@PathVariable Long customerId) {
