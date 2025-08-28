@@ -25,7 +25,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "email", nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -163,10 +163,6 @@ public class User implements UserDetails {
         this.reviews = reviews;
     }
 
-/*
- TODO [JPA Buddy] create field to map the 'role' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
- */
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
