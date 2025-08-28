@@ -6,7 +6,6 @@ import java.util.Optional;
 import com.example.demo.entity.Review;
 import com.example.demo.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;

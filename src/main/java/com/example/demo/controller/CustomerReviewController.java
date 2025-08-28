@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/customer/review")
 public class CustomerReviewController {
-    private final CustomerReviewService  reviewService;;
+    private final CustomerReviewService  reviewService;
 
     public CustomerReviewController(CustomerReviewService reviewService) {
         this.reviewService = reviewService;
