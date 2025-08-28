@@ -4,6 +4,8 @@ package com.example.demo.controller;
 import com.example.demo.dto.ReviewDTO;
 import com.example.demo.entity.Review;
 import com.example.demo.service.CustomerReviewService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,31 +24,26 @@ public class CustomerReviewController {
         this.reviewService = reviewService;
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping("/create")
     public ResponseEntity<ReviewDTO> createReview(
             @RequestParam Long orderId,
-            @RequestParam(required = false) Long customerId,
             @RequestBody ReviewDTO reviewDTO) {
 
-        Review createdReview = reviewService.createReview(orderId, customerId, reviewDTO);
-
-        ReviewDTO response = mapToDTO(createdReview);
+        Review review = reviewService.createReview(orderId, reviewDTO);
+        ReviewDTO response = mapToDTO(review);
         return ResponseEntity.ok(response);
     }
 
     private ReviewDTO mapToDTO(Review review) {
         ReviewDTO dto = new ReviewDTO();
         dto.setId(review.getId());
-
-        // Check for null before accessing
         if (review.getOrder() != null) {
             dto.setOrderId(review.getOrder().getId());
         }
-
         if (review.getCustomer() != null) {
             dto.setCustomerId(review.getCustomer().getId());
         }
-
         dto.setRating(review.getRating());
         dto.setComment(review.getComment());
         return dto;
@@ -79,29 +76,27 @@ public class CustomerReviewController {
         return ResponseEntity.ok(reviews);
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PutMapping("/update/{id}")
     public ResponseEntity<ReviewDTO> updateReview(
             @PathVariable Long id,
-            @RequestParam Long customerId,
             @RequestBody ReviewDTO updatedReviewDTO) {
 
         Review updatedReview = new Review();
         updatedReview.setRating(updatedReviewDTO.getRating());
         updatedReview.setComment(updatedReviewDTO.getComment());
 
-        Optional<Review> updated = reviewService.updateReview(id, customerId, updatedReview);
+        Review review  = reviewService.updateReview(id,updatedReview);
 
-        return updated.map(value -> ResponseEntity.ok(mapToDTO(value)))
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(mapToDTO(review));
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteReview(
-            @PathVariable Long id,
-            @RequestParam Long customerId) {
+            @PathVariable Long id) {
 
-        boolean deleted = reviewService.deleteReview(id, customerId);
-        return deleted ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        reviewService.deleteReview(id);
+        return ResponseEntity.noContent().build();
     }
 }

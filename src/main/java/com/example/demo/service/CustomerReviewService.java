@@ -3,10 +3,13 @@ package com.example.demo.service;
 import com.example.demo.dto.ReviewDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.Review;
+import com.example.demo.entity.User;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,22 +28,21 @@ public class CustomerReviewService {
     }
 
 
-    public Review createReview(Long orderId, Long customerId, ReviewDTO reviewDTO) {
+    public Review createReview(Long orderId, ReviewDTO reviewDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User customer = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
         Review review = new Review();
         review.setOrder(order);
+        review.setCustomer(customer);
         review.setRating(reviewDTO.getRating());
         review.setComment(reviewDTO.getComment());
-
-        if (customerId != null) {
-            userRepository.findById(customerId).ifPresent(review::setCustomer);
-        } else {
-            review.setCustomer(null);
-        }
-
-        review.setVisible(true);
 
         return reviewRepository.save(review);
     }
@@ -57,25 +59,41 @@ public class CustomerReviewService {
     }
 
     // Update
-    public Optional<Review> updateReview(Long reviewId, Long customerId, Review updatedReview) {
-        return reviewRepository.findById(reviewId)
-                .filter(review -> review.getCustomer() != null && review.getCustomer().getId().equals(customerId))
-                .map(existingReview -> {
-                    existingReview.setRating(updatedReview.getRating());
-                    existingReview.setComment(updatedReview.getComment());
-                    return reviewRepository.save(existingReview);
-                });
+    public Review updateReview(Long reviewId, Review updatedReview) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with ID: " + reviewId));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User customer = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+
+        if (review.getCustomer() == null || !review.getCustomer().getId().equals(customer.getId())) {
+            throw new RuntimeException("You are not allowed to update this review");
+        }
+
+        review.setRating(updatedReview.getRating());
+        review.setComment(updatedReview.getComment());
+        return reviewRepository.save(review);
     }
 
     // Delete
-    public boolean deleteReview(Long reviewId, Long customerId) {
-        return reviewRepository.findById(reviewId)
-                .filter(review -> review.getCustomer() != null && review.getCustomer().getId().equals(customerId))
-                .map(review -> {
-                    reviewRepository.delete(review);
-                    return true;
-                })
-                .orElse(false);
+    public void deleteReview(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with ID: " + reviewId));
+
+        // Get current logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User customer = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+
+        // Only allow the owner to delete
+        if (review.getCustomer() == null || !review.getCustomer().getId().equals(customer.getId())) {
+            throw new RuntimeException("You are not allowed to delete this review");
+        }
+
+        reviewRepository.delete(review);
     }
 
 }
