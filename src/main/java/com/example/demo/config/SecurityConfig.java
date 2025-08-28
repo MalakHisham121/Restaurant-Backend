@@ -14,10 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-// TODO
-// 1. change security config to enable csrf tokens
-// 2. remove auth from permit all
-// 3. check how to use bearer token from postman
+
 @Configuration
 public class SecurityConfig {
 
@@ -31,13 +28,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/api/**","/api/orderitem/**","api/auth/**","/api/orderitem/update").permitAll()// login/signup endpoints
-
-                        .anyRequest().permitAll()
+                        .requestMatchers("/", "/api/auth/**").permitAll().anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no sessions, JWT only
