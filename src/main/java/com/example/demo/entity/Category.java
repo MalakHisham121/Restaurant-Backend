@@ -20,6 +20,8 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private Set<Product> products = new LinkedHashSet<>();
 
+
+
     public Long getId() {
         return id;
     }
