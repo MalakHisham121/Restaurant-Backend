@@ -24,6 +24,7 @@ public class OrderStatusChange {
     private OffsetDateTime createdAt;
 
     @Column(name = "status", nullable = false)
+
     private String status;
 
     public Long getId() {

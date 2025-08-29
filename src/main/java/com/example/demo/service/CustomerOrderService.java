@@ -2,12 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.OrderPlacementDTO;
 import com.example.demo.dto.OrderPlacementResponseDTO;
-import com.example.demo.entity.Order;
-import com.example.demo.entity.OrderItem;
-import com.example.demo.entity.OrderStatusChange;
-import com.example.demo.entity.Product;
-import com.example.demo.entity.Table;
-import com.example.demo.entity.User;
+import com.example.demo.entity.*;
 import com.example.demo.repository.OrderReceptionRepository;
 import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.OrderStatusChangeRepository;

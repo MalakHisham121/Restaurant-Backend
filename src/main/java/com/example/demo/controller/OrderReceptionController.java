@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.OrderReceptionDTO;
 import com.example.demo.dto.OrderStatusUpdateDTO;
+import com.example.demo.entity.Order_status;
 import com.example.demo.service.OrderReceptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -78,7 +79,7 @@ public class OrderReceptionController {
                 return ResponseEntity.badRequest().body("Status is required");
             }
 
-            String result = orderReceptionService.updateOrderStatus(updateRequest.getOrderId(), updateRequest.getStatus().trim());
+            String result = orderReceptionService.updateOrderStatus(updateRequest.getOrderId(), Order_status.valueOf(updateRequest.getStatus().trim()));
 
             if (result == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found with ID: " + updateRequest.getOrderId());
