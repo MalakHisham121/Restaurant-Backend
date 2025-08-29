@@ -29,6 +29,8 @@ public class Review {
     @Column(name = "comment", length = Integer.MAX_VALUE)
     private String comment;
 
+    private boolean visible = true;
+
     public Long getId() {
         return id;
     }
@@ -69,4 +71,11 @@ public class Review {
         this.comment = comment;
     }
 
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
 }
