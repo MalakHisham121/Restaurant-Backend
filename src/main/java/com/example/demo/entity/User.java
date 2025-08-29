@@ -151,6 +151,10 @@ public class User implements UserDetails {
             this.role = role;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
     public void setPassword(String encode) {
         this.password = encode;
     }
