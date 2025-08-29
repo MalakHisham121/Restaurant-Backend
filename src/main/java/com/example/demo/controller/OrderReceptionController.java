@@ -79,7 +79,7 @@ public class OrderReceptionController {
                 return ResponseEntity.badRequest().body("Status is required");
             }
 
-            String result = orderReceptionService.updateOrderStatus(updateRequest.getOrderId(), Order_status.valueOf(updateRequest.getStatus().trim()));
+            String result = orderReceptionService.updateOrderStatus(updateRequest.getOrderId(), updateRequest.getStatus().trim());
 
             if (result == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found with ID: " + updateRequest.getOrderId());

@@ -37,8 +37,7 @@ public class Order {
     private OffsetDateTime updatedAt;
 
     @Column(name = "status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Order_status status;
+    private String status;
 
     @OneToMany(mappedBy = "order")
     private Set<OrderItem> orderItems = new LinkedHashSet<>();
@@ -96,11 +95,11 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
-    public Order_status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Order_status status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

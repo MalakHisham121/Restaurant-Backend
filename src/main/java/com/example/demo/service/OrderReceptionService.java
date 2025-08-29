@@ -61,7 +61,7 @@ public class OrderReceptionService {
         return mapOrderToDTO(order);
     }
 
-    public String updateOrderStatus(Long orderId, Order_status status) {
+    public String updateOrderStatus(Long orderId, String status) {
         Order order = orderReceptionRepository.findById(orderId).orElse(null);
         if (order == null) {
             return null;

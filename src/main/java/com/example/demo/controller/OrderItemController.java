@@ -15,13 +15,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@PreAuthorize("hasRole('CUSTOMER')")
 @RequestMapping("/api/orderitem")
 public class OrderItemController {
     private final OrderItemService orderItemService;
     public OrderItemController (OrderItemService orderItemService){
         this.orderItemService = orderItemService;
     }
-@GetMapping("")
+    @GetMapping("")
     public List<OrderItemDTO>getByOrderId(@RequestParam Long orderId){
         return orderItemService.findByOrderId(orderId)
                 .stream()

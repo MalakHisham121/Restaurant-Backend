@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.UserDTO;
 import com.example.demo.dto.UserSummerDTO;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -79,7 +80,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setPhone(userDTO.getPhone());
-        user.setRole(userDTO.getRole());
+        user.setRole(Role.valueOf(userDTO.getRole()));
         user.setUpdatedAt(OffsetDateTime.now());
 
 

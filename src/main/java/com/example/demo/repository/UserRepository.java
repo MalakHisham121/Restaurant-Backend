@@ -5,13 +5,14 @@ import com.example.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+
 import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
-    @Query("SELECT new com.example.demo.dto.UserSummerDTO(u.username, u.role) FROM User u")
+    @Query("SELECT u.username AS username, u.role AS role FROM User u")
     List<UserSummerDTO> findAllUsernamesAndRoles();
 
     @Query("SELECT username from User where username = :userName ")
