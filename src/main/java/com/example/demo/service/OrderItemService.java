@@ -141,6 +141,14 @@ public class OrderItemService {
 
     }
 
+    @Transactional
+    public String deleteOrderItem(Long orderItemId){
+        orderItemRepo.delete(orderItemRepo.findById(orderItemId).orElseThrow(()->new RuntimeException("No such order item with given ID!")));
+
+        return "Order item deleted succesfully";
+
+    }
+
 
 
 }
