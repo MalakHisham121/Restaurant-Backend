@@ -46,6 +46,15 @@ public class OrderItemController {
         return ResponseEntity.status(HttpStatus.OK).body(orderItemService.updateOrderItemQuantity(orderItemId,quantity));
 
     }
+    @DeleteMapping ("/delete/{id}")
+    public ResponseEntity<String> deleteOrderitem(@PathVariable long id){
+        return ResponseEntity.status(HttpStatus.OK).body(orderItemService.deleteOrderItem(id));
+
+    }
+
+    
+
+
 
 
 }
