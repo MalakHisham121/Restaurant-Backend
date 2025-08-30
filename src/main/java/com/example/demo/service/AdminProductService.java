@@ -116,4 +116,13 @@ public class AdminProductService {
                 updatedProduct.getInStockQuantity()
         );
     }
+
+    public void deleteProduct(Long productId) {
+        // Check if product exists
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+
+        // Delete the product
+        productRepository.delete(existingProduct);
+    }
 }

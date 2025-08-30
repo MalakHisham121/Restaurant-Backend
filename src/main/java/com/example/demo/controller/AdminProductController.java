@@ -91,4 +91,24 @@ public class AdminProductController {
                     .body("An unexpected error occurred while updating the product: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+        try {
+            // Basic validation
+            if (id == null || id <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Valid product ID is required for deletion");
+            }
+
+            adminProductService.deleteProduct(id);
+            return ResponseEntity.ok("Product deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Error deleting product: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred while deleting the product: " + e.getMessage());
+        }
+    }
 }
