@@ -26,6 +26,9 @@ public class Enquiry {
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
+    @Column(name = "reply_content", length = Integer.MAX_VALUE)
+    private String replyContent;
+
     public Long getId() {
         return id;
     }
@@ -57,5 +60,8 @@ public class Enquiry {
     public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public String getReplyContent() { return replyContent; }
+    public void setReplyContent(String replyContent) { this.replyContent = replyContent; }
 
 }
